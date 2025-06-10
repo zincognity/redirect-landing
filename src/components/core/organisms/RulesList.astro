@@ -1,0 +1,21 @@
+---
+import Rule from "@/components/core/molecules/Rule.astro";
+import { getListPageRules } from "@/services/page-rules";
+
+export const prerender = false;
+
+const list = await getListPageRules();
+---
+
+<div class="space-y-4">
+    <div class="flex justify-between px-2">
+        <h2 class="text-sm font-semibold text-zinc-400 uppercase w-1/2">
+            Target
+        </h2>
+        <h2 class="text-sm font-semibold text-zinc-400 uppercase w-1/2">
+            Redirects to
+        </h2>
+    </div>
+
+    {list.result.map((rule) => <Rule rule={rule} />)}
+</div>
