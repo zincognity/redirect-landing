@@ -1,22 +1,19 @@
+import { clientId } from "@/core/config";
+import { useSession } from "@/hooks/use-session";
 import { useEffect, useRef, useState } from "react";
 
-export const Header: React.FC = () => {
-    const [menuOpen, setMenuOpen] = useState<boolean>(false);
-    const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
-    const [isHidden, setIsHidden] = useState<boolean>(false);
+const redirectUri = "http://localhost:8080/api/v1/oauth/discord/callback";
+const scope = "identify";
+const discordLoginUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+    redirectUri
+)}&response_type=code&scope=${scope}`;
 
-    const routes = [{ src: "/home", title: "Home" }];
+export const Header: React.FC = () => {
+    const { decoded, isAuthenticated, removeToken } = useSession();
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
 
     const userMenuRef = useRef<HTMLDivElement | null>(null);
     const avatarRef = useRef<HTMLImageElement | null>(null);
-
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
-
-    const toggleUserMenu = () => {
-        setUserMenuOpen(!userMenuOpen);
-    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -25,112 +22,77 @@ export const Header: React.FC = () => {
                 !userMenuRef.current.contains(event.target as Node) &&
                 avatarRef.current &&
                 !avatarRef.current.contains(event.target as Node)
-            )
+            ) {
                 setUserMenuOpen(false);
+            }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const banner = document.getElementById("banner");
-            if (banner) {
-                const bannerBottom = banner.getBoundingClientRect().bottom;
-                setIsHidden(bannerBottom < 80);
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
+    const userId = decoded?.user.discord_id;
+    const username = decoded?.user.username;
+    const avatar = decoded?.user.avatar;
+    const avatarUrl =
+        userId && avatar
+            ? `https://cdn.discordapp.com/avatars/${userId}/${avatar}.png`
+            : "user.svg";
 
     return (
-        <div
-            className={`z-50 bg-black-primary bg-opacity-75 fixed top-0 left-0 w-full h-24 sm:h-20 flex justify-between items-center px-5 sm:px-10 transition-transform duration-300 `}
-        >
-            <div className="flex gap-5 w-full justify-end">
-                <div className="relative">
-                    <img
-                        ref={avatarRef}
-                        src={"/icons/user.svg"}
-                        width={50}
-                        height={50}
-                        alt="profile"
-                        className="rounded-full cursor-pointer"
-                        onClick={toggleUserMenu}
-                    />
-                    {userMenuOpen && (
-                        <div
-                            ref={userMenuRef}
-                            className="absolute right-0 mt-2 bg-red-dark text-black rounded-xl w-40"
-                            style={{ fontFamily: "Nunito Sans, sans-serif" }}
-                        >
-                            {true ? (
-                                <div className="mt-4 bg-white text-white-warm">
-                                    <h1 className="mb-3 text-center font-semibold">
-                                        {"FRIEND"}
-                                    </h1>
-                                    {"VISITOR" !== "VISITOR" && (
-                                        <button
-                                            onClick={() => {
-                                                setUserMenuOpen(false);
-                                            }}
-                                            className="w-full text-center font-medium py-3 rounded-b-xl hover:bg-black-soft hover:text-white hover:rounded-b-none"
-                                        >
-                                            {"profile"}
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => {
-                                            setUserMenuOpen(false);
-                                        }}
-                                        className="w-full text-center font-medium py-3 rounded-b-xl hover:bg-black-soft hover:text-white hover:rounded-b-xl"
-                                    >
-                                        {"sign_out"}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="">
-                                    <button
-                                        onClick={() => {
-                                            setUserMenuOpen(false);
-                                        }}
-                                        className="w-full text-center font-bold py-3 rounded-b-xl hover:bg-black-soft hover:text-white hover:rounded-xl"
-                                    >
-                                        {"log_in"}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+        <header className="z-50 fixed top-0 left-0 w-full h-20 px-6 flex items-center justify-between bg-black bg-opacity-80 backdrop-blur-md">
+            <div className="text-white text-xl font-bold">
+                Redirect - Incognity
             </div>
-            <div
-                className={`lg:hidden absolute top-20 left-0 w-full h-screen flex justify-center items-center bg-black-primary bg-opacity-95 text-white ${
-                    menuOpen ? "block animate-slide-down" : "hidden"
-                }`}
-            >
-                <ul className="flex flex-col items-center gap-[8vh] py-4 text-2xl">
-                    {routes.map((route) => (
-                        <li key={route.src}>
-                            <div
-                                className={"text-white-warm"}
-                                onClick={() => {
-                                    setMenuOpen(false);
-                                }}
-                            >
-                                {route.title.toUpperCase()}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+
+            <div className="relative fill-white ">
+                <img
+                    ref={avatarRef}
+                    src={avatarUrl}
+                    alt="User avatar"
+                    width={45}
+                    height={45}
+                    className={`rounded-full cursor-pointer border border-zinc-600 ${
+                        !userId && "p-1"
+                    }`}
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                />
+                {userMenuOpen && (
+                    <div
+                        ref={userMenuRef}
+                        className="absolute right-0 mt-2 w-60 bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg p-6 space-y-4 z-50"
+                    >
+                        {isAuthenticated ? (
+                            <>
+                                <div>
+                                    <p className="text-white font-semibold text-sm mb-1">
+                                        {username}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        removeToken();
+                                        setUserMenuOpen(false);
+                                    }}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors duration-200 w-full"
+                                >
+                                    Sign Out
+                                </button>
+                            </>
+                        ) : (
+                            <a href={discordLoginUrl} className="block">
+                                <button
+                                    onClick={() => setUserMenuOpen(false)}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors duration-200 w-full"
+                                >
+                                    Sign In
+                                </button>
+                            </a>
+                        )}
+                    </div>
+                )}
             </div>
-        </div>
+        </header>
     );
 };
