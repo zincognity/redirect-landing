@@ -25,11 +25,6 @@ export const useHashes = () => {
             });
             const data: Hash[] = await response.json();
 
-            if (!Array.isArray(data)) {
-                toast.error("Formato inválido de datos.");
-                return;
-            }
-
             setHashes((prev) => [...prev, ...data]);
             setHasMore(data.length === PAGE_SIZE);
         } catch (error) {
@@ -59,14 +54,12 @@ export const useHashes = () => {
             const data = await res.json();
 
             if (!res.ok) {
-                toast.error(
-                    data.message || data.errors?.[0]?.message || "Error"
-                );
+                toast.error(data.message);
                 return false;
             }
 
             setHashes((prev) => [...prev, hash]);
-            toast.success("Redirect created successfully.");
+            toast.success(data.message);
             return true;
         } catch (error) {
             toast.error("Network error while trying to save the redirect");
