@@ -1,4 +1,3 @@
-import { site } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { useHashes } from "@/hooks/use-hashes";
 import { useSession } from "@/hooks/use-session";
@@ -15,39 +14,17 @@ export const RuleForm = () => {
         if (!token) return;
         const form = new FormData(e.currentTarget);
 
-        const url = form.get("url") as string;
-        const hashValue = form.get("hash") as string;
-        const auth = form.get("auth") as string;
-
-        if (!url || !url.trim()) return toast.warning("The url is required");
-        if (!url.startsWith("http")) return toast.error("The url is invalid");
-        if (!hashValue || !hashValue.trim())
-            return toast.warning("The hash is required");
-        if (!auth || !auth.trim())
-            return toast.warning("The auth code is required");
-
-        const redirectFrom = `${site}/${hashValue.trim()}`;
-
         const hash: Hash = {
-            hash: redirectFrom,
-            redirectTo: url.trim(),
+            hash: form.get("url") as string,
+            redirectTo: form.get("hash") as string,
         };
 
-        try {
-            const res = await createHash(token, hash);
+        const res = await createHash(token, hash);
+        const data = await res.json();
 
-            if (!res.ok) {
-                const err = await res.json();
-                toast.error(err.message || err.errors[0].message);
-                return;
-            }
-
-            saveHash(hash);
-            toast.success("Redirect created successfully.");
-        } catch {
-            localStorage.removeItem("authCode");
-            toast.error("Network error while trying to save the redirect");
-        }
+        if (!res.ok) return toast.error(data.message);
+        saveHash(hash);
+        toast.success(data.message);
     };
 
     const [isValidTarget, setIsValidTarget] = useState<boolean | null>(null);
