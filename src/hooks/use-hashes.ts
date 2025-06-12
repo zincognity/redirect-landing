@@ -4,25 +4,51 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./use-session";
 
+const PAGE_SIZE = 20;
+
 export const useHashes = () => {
     const [hashes, setHashes] = useState<Hash[]>([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
     const { token } = useSession();
 
-    useEffect(() => {
-        const fetchHashes = async () => {
-            try {
-                if (!token) return;
-                const response = await getHashesList(token);
-                const data = await response.json();
-                setHashes(data);
-            } catch (error) {
-                toast.error("Error loading hashes");
-                console.error(error);
+    const fetchHashes = async (page: number) => {
+        try {
+            if (!token) return;
+            setLoading(true);
+
+            const response = await getHashesList(token, {
+                page,
+                limit: PAGE_SIZE,
+            });
+            const data: Hash[] = await response.json();
+
+            if (!Array.isArray(data)) {
+                toast.error("Formato inválido de datos.");
+                return;
             }
-        };
-        fetchHashes();
-    }, [token]);
+
+            setHashes((prev) => [...prev, ...data]);
+            setHasMore(data.length === PAGE_SIZE);
+        } catch (error) {
+            toast.error("Error loading hashes");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadMore = () => {
+        if (!loading && hasMore) {
+            setPage((prev) => prev + 1);
+        }
+    };
+
+    useEffect(() => {
+        if (token) fetchHashes(page);
+    }, [token, page]);
 
     const saveHash = async (hash: Hash) => {
         try {
@@ -44,7 +70,7 @@ export const useHashes = () => {
             return true;
         } catch (error) {
             toast.error("Network error while trying to save the redirect");
-            console.error("Network error:", error);
+            console.error(error);
             return false;
         } finally {
             setLoading(false);
@@ -56,7 +82,6 @@ export const useHashes = () => {
             if (!token) return;
             setLoading(true);
             const res = await deleteHash(token, id);
-
             const data = await res.json();
 
             if (!res.ok) {
@@ -78,8 +103,9 @@ export const useHashes = () => {
 
     return {
         hashes,
-        setHashes,
         loading,
+        hasMore,
+        loadMore,
         saveHash,
         removeHash,
     };

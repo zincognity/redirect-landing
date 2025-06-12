@@ -3,14 +3,14 @@ import type { Hash } from "@/core/types";
 
 interface QueryInterface {
     name: string;
-    value: string;
+    value: string | number;
 }
 
 export function get(token: string, url: string, ...query: QueryInterface[]) {
     const urlQuery = new URLSearchParams();
 
     query.forEach((q) => {
-        if (q.value) urlQuery.append(q.name, q.value);
+        if (q.value) urlQuery.append(q.name, q.value.toString());
     });
 
     const fullUrl = `${url}${

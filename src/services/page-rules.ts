@@ -1,11 +1,23 @@
-import { token, zoneId } from "@/core/config";
+import { zoneId } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { get, post, remove, update } from "@/utils/fetch";
 
-export async function getHashesList(token: string) {
+interface Pagination {
+    page: number;
+    limit: number;
+}
+
+export async function getHashesList(
+    token: string,
+    { page, limit }: Pagination
+) {
     const response = await get(
         token,
-        `http://localhost:8080/api/v1/hashes/current`
+        `http://localhost:8080/api/v1/hashes/current`,
+        ...[
+            { name: "page", value: page },
+            { name: "limit", value: limit },
+        ]
     );
     return response;
 }
