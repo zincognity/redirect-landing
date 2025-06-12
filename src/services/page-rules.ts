@@ -21,6 +21,14 @@ export async function getHashesPage(
     return response;
 }
 
+export async function verifyHashName(token: string, hash: string) {
+    const response = await get(
+        token,
+        `http://localhost:8080/api/v1/hashes/verify/${hash}`
+    );
+    return response;
+}
+
 export function createHash(token: string, body: Hash) {
     return post(token, `http://localhost:8080/api/v1/hashes`, body);
 }

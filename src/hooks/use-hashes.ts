@@ -1,5 +1,10 @@
 import type { Hash } from "@/core/types";
-import { createHash, deleteHash, getHashesPage } from "@/services/page-rules";
+import {
+    createHash,
+    deleteHash,
+    getHashesPage,
+    verifyHashName,
+} from "@/services/page-rules";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./use-session";
@@ -11,8 +16,22 @@ export const useHashes = () => {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [isUsed, setIsUsed] = useState<boolean | null>(null);
 
     const { token } = useSession();
+
+    const verifyHash = async (hash: string) => {
+        try {
+            if (!hash) return setIsUsed(null);
+            if (!token) return;
+
+            const response = await verifyHashName(token, hash);
+            if (!response.ok) return setIsUsed(false);
+            const data = await response.text();
+
+            setIsUsed(data == "true" ? true : false);
+        } catch (error) {}
+    };
 
     const fetchHashes = async (page: number) => {
         try {
@@ -106,5 +125,7 @@ export const useHashes = () => {
         loadMore,
         saveHash,
         removeHash,
+        verifyHash,
+        isUsed,
     };
 };

@@ -2,11 +2,10 @@ import { useHashesContext } from "@/contexts/hashes-context";
 import type { Hash } from "@/core/types";
 import { useSession } from "@/hooks/use-session";
 import { createHash } from "@/services/page-rules";
-import { useState } from "react";
 import { toast } from "sonner";
 
 export const RuleForm = () => {
-    const { saveHash } = useHashesContext();
+    const { saveHash, verifyHash, isUsed } = useHashesContext();
     const { token } = useSession();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,11 +26,9 @@ export const RuleForm = () => {
         toast.success(data.message);
     };
 
-    const [isValidTarget, setIsValidTarget] = useState<boolean | null>(null);
-
     const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setIsValidTarget(value.length >= 3);
+        verifyHash(value);
     };
 
     return (
@@ -40,7 +37,6 @@ export const RuleForm = () => {
             autoComplete="off"
             className="grid md:grid-cols-3 gap-4 mb-8 text-left"
         >
-            {/* Campo Target con validación */}
             <div className="flex flex-col gap-1 relative">
                 <label htmlFor="hash" className="text-sm text-zinc-400">
                     Target
@@ -54,9 +50,9 @@ export const RuleForm = () => {
                     onChange={handleTargetChange}
                     className={`px-4 py-2 rounded-lg border text-sm transition focus:outline-none focus:ring-2
                         ${
-                            isValidTarget === null
+                            isUsed === null
                                 ? "border-zinc-300 focus:ring-indigo-500"
-                                : isValidTarget
+                                : !isUsed
                                 ? "border-green-500 focus:ring-green-500"
                                 : "border-red-500 focus:ring-red-500"
                         }`}
@@ -67,16 +63,12 @@ export const RuleForm = () => {
                     style={{ display: "none" }}
                     autoComplete="off"
                 />
-                {isValidTarget !== null && (
+                {!isUsed != null && (
                     <span
                         className={`absolute top-1/2 right-3 text-lg pointer-events-none
-                            ${
-                                isValidTarget
-                                    ? "text-green-500"
-                                    : "text-red-500"
-                            }`}
+                            ${!isUsed ? "text-green-500" : "text-red-500"}`}
                     >
-                        {isValidTarget ? "✓" : "✕"}
+                        {isUsed == null ? "" : !isUsed ? "✓" : "✕"}
                     </span>
                 )}
             </div>
