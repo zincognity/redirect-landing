@@ -42,9 +42,7 @@ export const Header: React.FC = () => {
 
     return (
         <header className="z-50 fixed top-0 left-0 w-full h-20 px-6 flex items-center justify-between bg-black bg-opacity-80 backdrop-blur-md">
-            <div className="text-white text-xl font-bold">
-                Redirect - Incognity
-            </div>
+            <div className="text-white text-xl font-bold">Link Friends</div>
 
             <div className="relative fill-white ">
                 <img
