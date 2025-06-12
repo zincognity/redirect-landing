@@ -6,7 +6,7 @@ interface Pagination {
     limit: number;
 }
 
-export async function getHashesList(
+export async function getHashesPage(
     token: string,
     { page, limit }: Pagination
 ) {

@@ -1,5 +1,5 @@
 import type { Hash } from "@/core/types";
-import { createHash, deleteHash, getHashesList } from "@/services/page-rules";
+import { createHash, deleteHash, getHashesPage } from "@/services/page-rules";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./use-session";
@@ -19,7 +19,7 @@ export const useHashes = () => {
             if (!token) return;
             setLoading(true);
 
-            const response = await getHashesList(token, {
+            const response = await getHashesPage(token, {
                 page,
                 limit: PAGE_SIZE,
             });
