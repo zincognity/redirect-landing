@@ -1,4 +1,3 @@
-import { email } from "@/core/config";
 import type { Hash } from "@/core/types";
 
 interface QueryInterface {
@@ -31,8 +30,6 @@ export function post(token: string, url: string, body: Hash) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-Auth-Email": email,
-            "X-Auth-Key": token,
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
@@ -45,25 +42,5 @@ export function remove(token: string, url: string, id: string) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    });
-}
-
-export function update(url: string, body: unknown) {
-    return fetch(url, {
-        method: "PUT",
-        headers: {
-            Authorization: `Bearer ${""}`,
-        },
-        body: JSON.stringify(body),
-    });
-}
-
-export function edit(url: string, body: unknown) {
-    return fetch(url, {
-        method: "PATCH",
-        headers: {
-            Authorization: `Bearer ${""}`,
-        },
-        body: JSON.stringify(body),
     });
 }
