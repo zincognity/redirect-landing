@@ -1,14 +1,17 @@
-import { clientId } from "@/core/config";
 import { useSession } from "@/hooks/use-session";
 import { useEffect, useRef, useState } from "react";
 
-const redirectUri = "http://localhost:8080/api/v1/oauth/discord/callback";
-const scope = "identify";
-const discordLoginUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-    redirectUri
-)}&response_type=code&scope=${scope}`;
+interface Props {
+    clientId: string;
+}
 
-export const Header: React.FC = () => {
+export const Header: React.FC<Props> = ({ clientId }) => {
+    const redirectUri = "http://localhost:8080/api/v1/oauth/discord/callback";
+    const scope = "identify";
+    const discordLoginUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+    )}&response_type=code&scope=${scope}`;
+
     const { decoded, isAuthenticated, removeToken } = useSession();
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
