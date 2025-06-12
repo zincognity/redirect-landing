@@ -1,12 +1,12 @@
+import { useHashesContext } from "@/contexts/hashes-context";
 import type { Hash } from "@/core/types";
-import { useHashes } from "@/hooks/use-hashes";
 import { useSession } from "@/hooks/use-session";
 import { createHash } from "@/services/page-rules";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const RuleForm = () => {
-    const { saveHash } = useHashes();
+    const { saveHash } = useHashesContext();
     const { token } = useSession();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +23,7 @@ export const RuleForm = () => {
         const data = await res.json();
 
         if (!res.ok) return toast.error(data.message);
-        saveHash(hash);
+        await saveHash(hash);
         toast.success(data.message);
     };
 

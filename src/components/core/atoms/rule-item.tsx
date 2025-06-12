@@ -1,20 +1,17 @@
+import { useHashesContext } from "@/contexts/hashes-context";
 import { pageUrl } from "@/core/config";
 import type { Hash } from "@/core/types";
-import { useHashes } from "@/hooks/use-hashes";
 import { MdDelete } from "react-icons/md";
-import { toast } from "sonner";
 
 interface Props {
     hash: Hash;
 }
 
 export const RuleItem = ({ hash }: Props) => {
-    const { removeHash } = useHashes();
+    const { removeHash } = useHashesContext();
 
     const handleDelete = async () => {
-        const response = await removeHash(hash.id!);
-        if (!response) return toast.error("");
-        toast.success("");
+        await removeHash(hash.id!);
     };
 
     return (

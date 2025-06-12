@@ -1,8 +1,8 @@
-import { useHashes } from "@/hooks/use-hashes";
+import { useHashesContext } from "@/contexts/hashes-context";
 import { RuleItem } from "../atoms/rule-item";
 
 export const RuleList = () => {
-    const { hashes, loadMore, hasMore, loading } = useHashes();
+    const { hashes, loadMore, hasMore, loading } = useHashesContext();
 
     return (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg p-6 space-y-4">
@@ -17,9 +17,7 @@ export const RuleList = () => {
             {hashes.map((hash) => (
                 <RuleItem key={hash.id} hash={hash} />
             ))}
-            {loading && (
-                <p className="text-sm text-zinc-400">Loading...</p>
-            )}
+            {loading && <p className="text-sm text-zinc-400">Loading...</p>}
             {hasMore && (
                 <button
                     onClick={loadMore}
