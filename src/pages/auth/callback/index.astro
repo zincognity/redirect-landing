@@ -1,0 +1,13 @@
+<p>Procesando autenticación...</p>
+
+<script>
+    const params = new URLSearchParams(location.search);
+    const token = params.get("jwt");
+
+    if (token) {
+        localStorage.setItem("jwtToken", token);
+        window.location.href = "/";
+    } else {
+        window.location.href = "/";
+    }
+</script>
