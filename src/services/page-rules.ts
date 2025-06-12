@@ -1,4 +1,3 @@
-import { zoneId } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { get, post, remove } from "@/utils/fetch";
 
@@ -20,13 +19,6 @@ export async function getHashesList(
         ]
     );
     return response;
-}
-
-export function getRuleDetails(token: string, id: string) {
-    return get(
-        token,
-        `http://api.cloudflare.com/client/v4/zones/${zoneId}/pagerules/${id}`
-    );
 }
 
 export function createHash(token: string, body: Hash) {
