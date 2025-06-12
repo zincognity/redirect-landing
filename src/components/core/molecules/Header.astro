@@ -1,0 +1,87 @@
+<div
+    id="navbar"
+    class="z-50 bg-black bg-opacity-75 fixed top-0 left-0 w-full h-24 sm:h-20 flex justify-end items-center px-5 sm:px-10"
+>
+    <div class="flex gap-5">
+        <div class="relative">
+            <img
+                id="avatar"
+                src="/icons/user.svg"
+                width="60"
+                height="60"
+                alt="profile"
+                class="rounded-full cursor-pointer"
+                onclick="window.toggleUserMenu()"
+            />
+            <div
+                id="userMenu"
+                class="hidden absolute right-0 mt-2 bg-red-900 text-white rounded-xl w-40"
+            >
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    let session = null;
+
+    async function fetchUserSession() {
+        const auth = localStorage.getItem("authToken");
+
+        try {
+            const res = await fetch("http://localhost:8080/api/v1/users/me", {
+                headers: {
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjoiNjg0YTcyNjQ1MmU3ODliYjdjYTU5MTFhIiwiYXZhdGFyIjoiMzlkMzIyNGNkN2FmMWU0ZDFjNDY0NTEyZmU0N2IwOTkiLCJkaXNjb3JkX2lkIjoiMjQ1NzAyMjUzOTcxODk4Mzc5IiwidXNlcm5hbWUiOiJpbmNvZ25pdHkifSwiaWF0IjoxNzQ5NzA5NDI5LCJleHAiOjI3NDk3MDk0Mjl9.RUob6qTTvQ0VjqBI8Qd88divC7vvoT3x1_DXqaVrEDI`,
+                },
+            });
+
+            if (res.ok) {
+                session = await res.json();
+                updateUserUI();
+            }
+        } catch (error) {
+            console.error("Error fetching session:", error);
+        }
+    }
+
+    window.toggleUserMenu = function toggleUserMenu() {
+        const menu = document.getElementById("userMenu");
+        menu.classList.toggle("hidden");
+    };
+
+    function updateUserUI() {
+        const avatar = document.getElementById("avatar");
+        const menu = document.getElementById("userMenu");
+        if (session) {
+            avatar.src =
+                `https://cdn.discordapp.com/avatars/${session.discordId}/${session.avatar}.png?size=240` ||
+                "/icons/user.svg";
+            menu.innerHTML = `
+                <div class="mt-4">
+                    <h1 class="mb-3 text-center font-semibold">
+                        FRIEND
+                    </h1>
+                  <button
+                      onclick="location.href = '/api/auth/signout'"
+                      class="w-full text-center font-medium py-3 hover:bg-black hover:rounded-b-xl"
+                  >
+                      Cerrar sesión
+                  </button>
+                </div>
+            `;
+        } else {
+            menu.innerHTML = `
+                <button
+                    onclick="location.href = '/api/auth/signin'"
+                    class="w-full text-center font-bold py-3 hover:bg-black hover:rounded-xl"
+                >
+                    Iniciar sesión
+                </button>
+            `;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchUserSession();
+    });
+</script>
