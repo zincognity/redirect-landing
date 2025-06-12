@@ -36,8 +36,5 @@ export function editPageRule(id: string, body: unknown) {
 }
 
 export function deletePageRule(id: string) {
-    return remove(
-        `http://api.cloudflare.com/client/v4/zones/${zoneId}/pagerules`,
-        id
-    );
+    return remove(`http://localhost:8080/api/v1/hashes`, id);
 }
