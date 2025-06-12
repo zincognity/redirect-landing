@@ -2,6 +2,8 @@ import { site } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { useHashes } from "@/hooks/use-hashes";
 import { useSession } from "@/hooks/use-session";
+import { createHash } from "@/services/page-rules";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const RuleForm = () => {
@@ -10,6 +12,7 @@ export const RuleForm = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!token) return;
         const form = new FormData(e.currentTarget);
 
         const url = form.get("url") as string;
@@ -31,11 +34,7 @@ export const RuleForm = () => {
         };
 
         try {
-            const res = await fetch("/api/cloudflare", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(hash),
-            });
+            const res = await createHash(token, hash);
 
             if (!res.ok) {
                 const err = await res.json();
@@ -43,7 +42,6 @@ export const RuleForm = () => {
                 return;
             }
 
-            localStorage.setItem("authCode", auth);
             saveHash(hash);
             toast.success("Redirect created successfully.");
         } catch {
@@ -52,13 +50,61 @@ export const RuleForm = () => {
         }
     };
 
+    const [isValidTarget, setIsValidTarget] = useState<boolean | null>(null);
+
+    const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setIsValidTarget(value.length >= 3);
+    };
+
     return (
         <form
             onSubmit={handleSubmit}
             autoComplete="off"
             className="grid md:grid-cols-3 gap-4 mb-8 text-left"
         >
-            <div className="flex flex-col gap-1">
+            {/* Campo Target con validación */}
+            <div className="flex flex-col gap-1 relative">
+                <label htmlFor="hash" className="text-sm text-zinc-400">
+                    Target
+                </label>
+                <input
+                    type="text"
+                    id="hash"
+                    name="hash"
+                    autoComplete="off"
+                    placeholder="abc123"
+                    onChange={handleTargetChange}
+                    className={`px-4 py-2 rounded-lg border text-sm transition focus:outline-none focus:ring-2
+                        ${
+                            isValidTarget === null
+                                ? "border-zinc-300 focus:ring-indigo-500"
+                                : isValidTarget
+                                ? "border-green-500 focus:ring-green-500"
+                                : "border-red-500 focus:ring-red-500"
+                        }`}
+                />
+                <input
+                    type="text"
+                    name="fakeusername"
+                    style={{ display: "none" }}
+                    autoComplete="off"
+                />
+                {isValidTarget !== null && (
+                    <span
+                        className={`absolute top-1/2 right-3 text-lg pointer-events-none
+                            ${
+                                isValidTarget
+                                    ? "text-green-500"
+                                    : "text-red-500"
+                            }`}
+                    >
+                        {isValidTarget ? "✓" : "✕"}
+                    </span>
+                )}
+            </div>
+
+            <div className="flex flex-col col-span-2 gap-1">
                 <label htmlFor="url" className="text-sm text-zinc-400">
                     Link to redirect
                 </label>
@@ -67,42 +113,10 @@ export const RuleForm = () => {
                     id="url"
                     name="url"
                     placeholder="https://example.com"
-                    className="input"
+                    className="px-4 py-2 rounded-lg border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
                 />
             </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="hash" className="text-sm text-zinc-400">
-                    Hash
-                </label>
-                <input
-                    type="text"
-                    id="hash"
-                    name="hash"
-                    autoComplete="off"
-                    placeholder="abc123"
-                    className="input"
-                />
-                <input
-                    type="text"
-                    name="fakeusername"
-                    style={{ display: "none" }}
-                    autoComplete="off"
-                />
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="auth" className="text-sm text-zinc-400">
-                    Auth Code
-                </label>
-                <input
-                    type="password"
-                    id="auth"
-                    name="auth"
-                    autoComplete="nope"
-                    placeholder="••••••••"
-                    defaultValue={token || ""}
-                    className="input"
-                />
-            </div>
+
             <div className="md:col-span-3 flex justify-end mt-4">
                 <button
                     type="submit"
