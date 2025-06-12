@@ -1,4 +1,4 @@
-import { email, token } from "@/core/config";
+import { email } from "@/core/config";
 import type { Hash } from "@/core/types";
 
 interface QueryInterface {
@@ -20,6 +20,7 @@ export function get(token: string, url: string, ...query: QueryInterface[]) {
     return fetch(fullUrl, {
         method: "GET",
         headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
     });
@@ -42,7 +43,7 @@ export function remove(url: string, id: string) {
     return fetch(`${url}/${id}`, {
         method: "DELETE",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${""}`,
         },
     });
 }
@@ -51,7 +52,7 @@ export function update(url: string, body: unknown) {
     return fetch(url, {
         method: "PUT",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${""}`,
         },
         body: JSON.stringify(body),
     });
@@ -61,7 +62,7 @@ export function edit(url: string, body: unknown) {
     return fetch(url, {
         method: "PATCH",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${""}`,
         },
         body: JSON.stringify(body),
     });

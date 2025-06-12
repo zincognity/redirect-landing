@@ -22,7 +22,7 @@ export const useHashes = () => {
             }
         };
         fetchHashes();
-    }, []);
+    }, [token]);
 
     const saveHash = async (hash: Hash) => {
         try {
