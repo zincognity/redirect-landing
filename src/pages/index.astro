@@ -1,6 +1,5 @@
 ---
-import PageRuleForm from "@/components/core/organisms/rule-form";
-import RulesList from "@/components/core/organisms/RulesList.astro";
+import { Main } from "@/components/core/organisms/main";
 import SeoLayout from "@/core/layouts/SeoLayout.astro";
 import "@styles";
 
@@ -14,11 +13,5 @@ const description = "Manage and view your redirection rules";
     </h1>
     <p class="text-zinc-400 mb-10">{description}</p>
 
-    <PageRuleForm client:load />
-
-    <div
-        class="bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg p-6 space-y-4"
-    >
-        <RulesList server:defer />
-    </div>
+    <Main client:load />
 </SeoLayout>

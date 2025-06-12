@@ -1,4 +1,5 @@
 ---
+import { Header } from "@/components/core/molecules/header";
 import Sonner from "@/components/core/molecules/Sonner.astro";
 import "@styles";
 
@@ -35,6 +36,7 @@ const description = "Manage and view your redirection rules";
     <body class="min-h-screen flex flex-col items-center pt-[10%] px-4 py-12">
         <Sonner />
 
+        <Header client:load />
         <main class="w-full max-w-[90%] md:max-w-[80%] text-center">
             <slot />
         </main>
