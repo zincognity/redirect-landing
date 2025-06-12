@@ -5,7 +5,7 @@
     const token = params.get("jwt");
 
     if (token) {
-        localStorage.setItem("jwtToken", token);
+        localStorage.setItem("jwt", token);
         window.location.href = "/";
     } else {
         window.location.href = "/";
