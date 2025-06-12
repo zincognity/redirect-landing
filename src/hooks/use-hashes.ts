@@ -1,36 +1,35 @@
 import type { Hash } from "@/core/types";
+import { createHash, getHashesList } from "@/services/page-rules";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "./use-session";
 
 export const useHashes = () => {
     const [hashes, setHashes] = useState<Hash[]>([]);
     const [loading, setLoading] = useState(false);
+    const { token } = useSession();
 
     useEffect(() => {
-        const fetchRules = async () => {
+        const fetchHashes = async () => {
             try {
-                const response = await fetch("/api/cloudflare");
+                if (!token) return;
+                const response = await getHashesList(token);
                 const data = await response.json();
-                setHashes(data.result || []);
+                setHashes(data);
             } catch (error) {
                 toast.error("Error loading hashes");
                 console.error(error);
             }
         };
-        fetchRules();
+        fetchHashes();
     }, []);
 
-    const createHash = async (hash: Hash) => {
+    const saveHash = async (hash: Hash) => {
         try {
+            if (!token) return;
             setLoading(true);
-            const res = await fetch("/api/cloudflare", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(hash),
-            });
 
+            const res = await createHash(token, hash);
             const data = await res.json();
 
             if (!res.ok) {
@@ -86,7 +85,7 @@ export const useHashes = () => {
         hashes,
         setHashes,
         loading,
-        createHash,
+        saveHash,
         deleteHash,
     };
 };

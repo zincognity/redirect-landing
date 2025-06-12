@@ -1,11 +1,11 @@
 import { site } from "@/core/config";
 import type { Hash } from "@/core/types";
-import { useHashes } from "@/hooks/use-page-rules";
+import { useHashes } from "@/hooks/use-hashes";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 
 export const RuleForm = () => {
-    const { createHash } = useHashes();
+    const { saveHash } = useHashes();
     const { token } = useSession();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -13,18 +13,19 @@ export const RuleForm = () => {
         const form = new FormData(e.currentTarget);
 
         const url = form.get("url") as string;
-        const hash = form.get("hash") as string;
+        const hashValue = form.get("hash") as string;
         const auth = form.get("auth") as string;
 
         if (!url || !url.trim()) return toast.warning("The url is required");
         if (!url.startsWith("http")) return toast.error("The url is invalid");
-        if (!hash || !hash.trim()) return toast.warning("The hash is required");
+        if (!hashValue || !hashValue.trim())
+            return toast.warning("The hash is required");
         if (!auth || !auth.trim())
             return toast.warning("The auth code is required");
 
-        const redirectFrom = `${site}/${hash.trim()}`;
+        const redirectFrom = `${site}/${hashValue.trim()}`;
 
-        const pageRule: Hash = {
+        const hash: Hash = {
             hash: redirectFrom,
             redirectTo: url.trim(),
         };
@@ -33,7 +34,7 @@ export const RuleForm = () => {
             const res = await fetch("/api/cloudflare", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(pageRule),
+                body: JSON.stringify(hash),
             });
 
             if (!res.ok) {
@@ -43,7 +44,7 @@ export const RuleForm = () => {
             }
 
             localStorage.setItem("authCode", auth);
-            createHash(pageRule);
+            saveHash(hash);
             toast.success("Redirect created successfully.");
         } catch {
             localStorage.removeItem("authCode");

@@ -1,12 +1,12 @@
 import { email, token } from "@/core/config";
-import type { PageRule } from "@/core/types";
+import type { Hash } from "@/core/types";
 
 interface QueryInterface {
     name: string;
     value: string;
 }
 
-export function get(url: string, ...query: QueryInterface[]) {
+export function get(token: string, url: string, ...query: QueryInterface[]) {
     const urlQuery = new URLSearchParams();
 
     query.forEach((q) => {
@@ -25,7 +25,7 @@ export function get(url: string, ...query: QueryInterface[]) {
     });
 }
 
-export function post(url: string, body: PageRule) {
+export function post(token: string, url: string, body: Hash) {
     return fetch(url, {
         method: "POST",
         headers: {

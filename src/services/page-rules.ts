@@ -1,20 +1,24 @@
 import { zoneId } from "@/core/config";
-import type { PageRule } from "@/core/types";
+import type { Hash } from "@/core/types";
 import { get, post, remove, update } from "@/utils/fetch";
 
-export async function getListPageRules() {
-    const response = await get(`https://localhost:8080/api/v1/hashes/current`);
+export async function getHashesList(token: string) {
+    const response = await get(
+        token,
+        `https://localhost:8080/api/v1/hashes/current`
+    );
     return response;
 }
 
-export function getRuleDetails(id: string) {
+export function getRuleDetails(token: string, id: string) {
     return get(
+        token,
         `https://api.cloudflare.com/client/v4/zones/${zoneId}/pagerules/${id}`
     );
 }
 
-export function createPageRule(body: PageRule) {
-    return post(`https://localhost:8080/api/v1/hashes`, body);
+export function createHash(token: string, body: Hash) {
+    return post(token, `https://localhost:8080/api/v1/hashes`, body);
 }
 
 export function updatePageRule(id: string, body: unknown) {

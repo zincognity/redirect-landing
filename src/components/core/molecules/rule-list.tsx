@@ -1,4 +1,4 @@
-import { useHashes } from "@/hooks/use-page-rules";
+import { useHashes } from "@/hooks/use-hashes";
 import { RuleItem } from "../atoms/rule-item";
 
 export const RuleList = () => {

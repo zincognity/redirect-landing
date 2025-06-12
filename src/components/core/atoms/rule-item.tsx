@@ -1,6 +1,6 @@
 import { pageUrl } from "@/core/config";
 import type { Hash } from "@/core/types";
-import { useHashes } from "@/hooks/use-page-rules";
+import { useHashes } from "@/hooks/use-hashes";
 import { useSession } from "@/hooks/use-session";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
