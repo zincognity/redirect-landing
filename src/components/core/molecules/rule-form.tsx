@@ -14,8 +14,8 @@ export const RuleForm = () => {
         const form = new FormData(e.currentTarget);
 
         const hash: Hash = {
-            hash: form.get("url") as string,
-            redirectTo: form.get("hash") as string,
+            hash: form.get("hash") as string,
+            redirectTo: form.get("url") as string,
         };
 
         const res = await createHash(token, hash);
