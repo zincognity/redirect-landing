@@ -1,9 +1,9 @@
-import type { PageRule } from "@/core/types";
+import type { Hash } from "@/core/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const usePageRules = () => {
-    const [rules, setRules] = useState<PageRule[]>([]);
+export const useHashes = () => {
+    const [hashes, setHashes] = useState<Hash[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -11,16 +11,16 @@ export const usePageRules = () => {
             try {
                 const response = await fetch("/api/cloudflare");
                 const data = await response.json();
-                setRules(data.result || []);
+                setHashes(data.result || []);
             } catch (error) {
-                toast.error("Error loading rules");
+                toast.error("Error loading hashes");
                 console.error(error);
             }
         };
         fetchRules();
     }, []);
 
-    const createRule = async (rule: PageRule) => {
+    const createHash = async (hash: Hash) => {
         try {
             setLoading(true);
             const res = await fetch("/api/cloudflare", {
@@ -28,7 +28,7 @@ export const usePageRules = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(rule),
+                body: JSON.stringify(hash),
             });
 
             const data = await res.json();
@@ -40,7 +40,7 @@ export const usePageRules = () => {
                 return false;
             }
 
-            setRules((prev) => [...prev, rule]);
+            setHashes((prev) => [...prev, hash]);
             toast.success("Redirect created successfully.");
             return true;
         } catch (error) {
@@ -52,7 +52,7 @@ export const usePageRules = () => {
         }
     };
 
-    const deleteRule = async (id: string, auth: string) => {
+    const deleteHash = async (id: string, auth: string) => {
         try {
             setLoading(true);
             const res = await fetch("/api/cloudflare", {
@@ -70,8 +70,8 @@ export const usePageRules = () => {
                 return false;
             }
 
-            setRules((prev) => prev.filter((r) => r.id !== id));
-            toast.success("Rule successfully deleted.");
+            setHashes((prev) => prev.filter((r) => r.id !== id));
+            toast.success("Hash successfully deleted.");
             return true;
         } catch (error) {
             toast.error("Network error while deleting");
@@ -83,10 +83,10 @@ export const usePageRules = () => {
     };
 
     return {
-        rules,
-        setRules,
+        hashes,
+        setHashes,
         loading,
-        createRule,
-        deleteRule,
+        createHash,
+        deleteHash,
     };
 };

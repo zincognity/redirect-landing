@@ -1,11 +1,11 @@
 import { site } from "@/core/config";
-import type { PageRule } from "@/core/types";
-import { usePageRules } from "@/hooks/use-page-rules";
+import type { Hash } from "@/core/types";
+import { useHashes } from "@/hooks/use-page-rules";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 
 export const RuleForm = () => {
-    const { createRule } = usePageRules();
+    const { createHash } = useHashes();
     const { token } = useSession();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,22 +24,9 @@ export const RuleForm = () => {
 
         const redirectFrom = `${site}/${hash.trim()}`;
 
-        const pageRule: PageRule = {
-            actions: [
-                {
-                    id: "forwarding_url",
-                    value: { status_code: 301, url: url.trim() },
-                },
-            ],
-            targets: [
-                {
-                    constraint: { operator: "matches", value: redirectFrom },
-                    target: "url",
-                },
-            ],
-            priority: 1,
-            status: "active",
-            authentication: auth,
+        const pageRule: Hash = {
+            hash: redirectFrom,
+            redirectTo: url.trim(),
         };
 
         try {
@@ -56,7 +43,7 @@ export const RuleForm = () => {
             }
 
             localStorage.setItem("authCode", auth);
-            createRule(pageRule);
+            createHash(pageRule);
             toast.success("Redirect created successfully.");
         } catch {
             localStorage.removeItem("authCode");

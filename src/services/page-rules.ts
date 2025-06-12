@@ -3,9 +3,7 @@ import type { PageRule } from "@/core/types";
 import { get, post, remove, update } from "@/utils/fetch";
 
 export async function getListPageRules() {
-    const response = await get(
-        `https://api.cloudflare.com/client/v4/zones/${zoneId}/pagerules`
-    );
+    const response = await get(`https://localhost:8080/api/v1/hashes/current`);
     return response;
 }
 
@@ -16,10 +14,7 @@ export function getRuleDetails(id: string) {
 }
 
 export function createPageRule(body: PageRule) {
-    return post(
-        `https://api.cloudflare.com/client/v4/zones/${zoneId}/pagerules`,
-        body
-    );
+    return post(`https://localhost:8080/api/v1/hashes`, body);
 }
 
 export function updatePageRule(id: string, body: unknown) {

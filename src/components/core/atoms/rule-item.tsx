@@ -1,21 +1,21 @@
 import { pageUrl } from "@/core/config";
-import type { PageRule } from "@/core/types";
-import { usePageRules } from "@/hooks/use-page-rules";
+import type { Hash } from "@/core/types";
+import { useHashes } from "@/hooks/use-page-rules";
 import { useSession } from "@/hooks/use-session";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 
 interface Props {
-    rule: PageRule;
+    hash: Hash;
 }
 
-export const RuleItem = ({ rule }: Props) => {
-    const { deleteRule } = usePageRules();
+export const RuleItem = ({ hash }: Props) => {
+    const { deleteHash } = useHashes();
     const { token } = useSession();
 
     const handleDelete = async () => {
         if (!token) return;
-        const response = await deleteRule(rule.id!, token);
+        const response = await deleteHash(hash.id!, token);
         if (!response) return toast.error("");
         toast.success("");
     };
@@ -25,27 +25,21 @@ export const RuleItem = ({ rule }: Props) => {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="w-full sm:w-[40%]">
                     <ul className="list-inside text-white space-y-1 break-words">
-                        {rule.targets.map((r, i) => (
-                            <li key={i}>
-                                {r.constraint?.value.replace(`${pageUrl}/`, "")}
-                            </li>
-                        ))}
+                        <li>{hash.hash.replace(`${pageUrl}/`, "")}</li>
                     </ul>
                 </div>
                 <div className="w-full sm:w-[50%]">
                     <ul className="list-inside text-indigo-400 space-y-1 break-words">
-                        {rule.actions.map((r, i) => (
-                            <li key={i}>
-                                <a
-                                    href={rule.targets[0]?.constraint?.value}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hover:underline"
-                                >
-                                    {r.value.url}
-                                </a>
-                            </li>
-                        ))}
+                        <li>
+                            <a
+                                href={hash.hash}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:underline"
+                            >
+                                {hash.redirectTo}
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div className="w-full sm:w-auto justify-center items-center flex">

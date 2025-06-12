@@ -1,8 +1,8 @@
-import { usePageRules } from "@/hooks/use-page-rules";
+import { useHashes } from "@/hooks/use-page-rules";
 import { RuleItem } from "../atoms/rule-item";
 
 export const RuleList = () => {
-    const { rules } = usePageRules();
+    const { hashes } = useHashes();
 
     return (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg p-6 space-y-4">
@@ -14,8 +14,8 @@ export const RuleList = () => {
                     Redirects to
                 </h2>
             </div>
-            {rules.map((rule) => (
-                <RuleItem key={rule.id} rule={rule} />
+            {hashes.map((hash) => (
+                <RuleItem key={hash.id} hash={hash} />
             ))}
         </div>
     );

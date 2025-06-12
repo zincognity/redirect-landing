@@ -19,6 +19,12 @@ export interface Action {
     };
 }
 
+export interface Hash {
+    id?: string;
+    userId?: string;
+    hash: string;
+    redirectTo: string;
+}
 export interface PageRule {
     id?: string;
     actions: Action[];
