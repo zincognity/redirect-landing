@@ -1,6 +1,7 @@
 import { pageUrl } from "@/core/config";
 import type { PageRule } from "@/core/types";
 import { usePageRules } from "@/hooks/use-page-rules";
+import { useSession } from "@/hooks/use-session";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 
@@ -10,25 +11,13 @@ interface Props {
 
 export const RuleItem = ({ rule }: Props) => {
     const { deleteRule } = usePageRules();
+    const { token } = useSession();
 
     const handleDelete = async () => {
-        const auth = (document.getElementById("auth") as HTMLInputElement)
-            ?.value;
-        if (!auth) return toast.warning("Enter the authentication code.");
-
-        const res = await fetch("/api/cloudflare", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: rule.id, authentication: auth }),
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-            toast.success("Rule successfully deleted.");
-            deleteRule(rule.id!, auth);
-        } else {
-            toast.error("Error deleting: " + data.message);
-        }
+        if (!token) return;
+        const response = await deleteRule(rule.id!, token);
+        if (!response) return toast.error("");
+        toast.success("");
     };
 
     return (
