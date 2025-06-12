@@ -1,5 +1,5 @@
 import type { Hash } from "@/core/types";
-import { createHash, getHashesList } from "@/services/page-rules";
+import { createHash, deleteHash, getHashesList } from "@/services/page-rules";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "./use-session";
@@ -51,16 +51,11 @@ export const useHashes = () => {
         }
     };
 
-    const deleteHash = async (id: string, auth: string) => {
+    const removeHash = async (id: string) => {
         try {
+            if (!token) return;
             setLoading(true);
-            const res = await fetch("/api/cloudflare", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id, authentication: auth }),
-            });
+            const res = await deleteHash(token, id);
 
             const data = await res.json();
 
@@ -70,7 +65,7 @@ export const useHashes = () => {
             }
 
             setHashes((prev) => prev.filter((r) => r.id !== id));
-            toast.success("Hash successfully deleted.");
+            toast.success(data);
             return true;
         } catch (error) {
             toast.error("Network error while deleting");
@@ -86,6 +81,6 @@ export const useHashes = () => {
         setHashes,
         loading,
         saveHash,
-        deleteHash,
+        removeHash,
     };
 };

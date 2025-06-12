@@ -1,7 +1,6 @@
 import { pageUrl } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { useHashes } from "@/hooks/use-hashes";
-import { useSession } from "@/hooks/use-session";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 
@@ -10,12 +9,10 @@ interface Props {
 }
 
 export const RuleItem = ({ hash }: Props) => {
-    const { deleteHash } = useHashes();
-    const { token } = useSession();
+    const { removeHash } = useHashes();
 
     const handleDelete = async () => {
-        if (!token) return;
-        const response = await deleteHash(hash.id!, token);
+        const response = await removeHash(hash.id!);
         if (!response) return toast.error("");
         toast.success("");
     };

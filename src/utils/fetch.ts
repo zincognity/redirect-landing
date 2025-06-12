@@ -39,11 +39,11 @@ export function post(token: string, url: string, body: Hash) {
     });
 }
 
-export function remove(url: string, id: string) {
+export function remove(token: string, url: string, id: string) {
     return fetch(`${url}/${id}`, {
         method: "DELETE",
         headers: {
-            Authorization: `Bearer ${""}`,
+            Authorization: `Bearer ${token}`,
         },
     });
 }

@@ -1,4 +1,4 @@
-import { zoneId } from "@/core/config";
+import { token, zoneId } from "@/core/config";
 import type { Hash } from "@/core/types";
 import { get, post, remove, update } from "@/utils/fetch";
 
@@ -35,6 +35,6 @@ export function editPageRule(id: string, body: unknown) {
     );
 }
 
-export function deletePageRule(id: string) {
-    return remove(`http://localhost:8080/api/v1/hashes`, id);
+export function deleteHash(token: string, id: string) {
+    return remove(token, `http://localhost:8080/api/v1/hashes`, id);
 }
