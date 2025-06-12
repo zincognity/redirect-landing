@@ -42,8 +42,13 @@ export const useHashes = () => {
     };
 
     useEffect(() => {
-        if (token) fetchHashes(page);
-    }, [token, page]);
+        if (!token || !hasMore) return;
+        fetchHashes(page);
+    }, [page]);
+
+    useEffect(() => {
+        if (token) fetchHashes(1);
+    }, [token]);
 
     const saveHash = async (hash: Hash) => {
         try {
@@ -58,7 +63,7 @@ export const useHashes = () => {
                 return false;
             }
 
-            setHashes((prev) => [...prev, hash]);
+            setHashes((prev) => [data, ...prev]);
             toast.success(data.message);
             return true;
         } catch (error) {
@@ -75,10 +80,10 @@ export const useHashes = () => {
             if (!token) return;
             setLoading(true);
             const res = await deleteHash(token, id);
-            const data = await res.json();
+            const data = await res.text();
 
             if (!res.ok) {
-                toast.error("Error deleting: " + data.message);
+                toast.error("Error deleting: " + data);
                 return false;
             }
 
