@@ -1,8 +1,6 @@
 import { useHashesContext } from "@/contexts/hashes-context";
 import type { Hash } from "@/core/types";
 import { useSession } from "@/hooks/use-session";
-import { createHash } from "@/services/page-rules";
-import { toast } from "sonner";
 
 export const RuleForm = () => {
     const { saveHash, verifyHash, isUsed } = useHashesContext();
@@ -18,12 +16,7 @@ export const RuleForm = () => {
             redirectTo: form.get("url") as string,
         };
 
-        const res = await createHash(token, hash);
-        const data = await res.json();
-
-        if (!res.ok) return toast.error(data.message);
         await saveHash(hash);
-        toast.success(data.message);
     };
 
     const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
