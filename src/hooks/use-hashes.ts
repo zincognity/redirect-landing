@@ -27,9 +27,9 @@ export const useHashes = () => {
 
             const response = await verifyHashName(token, hash);
             if (!response.ok) return setIsUsed(false);
-            const data = await response.text();
+            const data = await response.json();
 
-            setIsUsed(data == "true" ? true : false);
+            setIsUsed(data.content);
         } catch (error) {}
     };
 
@@ -42,12 +42,14 @@ export const useHashes = () => {
                 page,
                 limit: PAGE_SIZE,
             });
-            const data: Hash[] = await response.json();
+            const data = await response.json();
 
-            setHashes((prev) => [...prev, ...data]);
+            if (!response.ok) throw new Error(data.message);
+
+            setHashes((prev) => [...prev, ...data.content]);
             setHasMore(data.length === PAGE_SIZE);
         } catch (error) {
-            toast.error("Error loading hashes");
+            toast.error(error as string);
             console.error(error);
             setHasMore(false);
         } finally {
@@ -56,9 +58,7 @@ export const useHashes = () => {
     };
 
     const loadMore = () => {
-        if (!loading && hasMore) {
-            setPage((prev) => prev + 1);
-        }
+        if (!loading && hasMore) setPage((prev) => prev + 1);
     };
 
     useEffect(() => {
@@ -78,16 +78,13 @@ export const useHashes = () => {
             const res = await createHash(token, hash);
             const data = await res.json();
 
-            if (!res.ok) {
-                toast.error(data.message);
-                return false;
-            }
+            if (!res.ok) throw new Error(data.message);
 
-            setHashes((prev) => [data, ...prev]);
+            setHashes((prev) => [data.content, ...prev]);
             toast.success(data.message);
             return true;
         } catch (error) {
-            toast.error("Network error while trying to save the redirect");
+            toast.error(error as string);
             console.error(error);
             return false;
         } finally {
@@ -100,18 +97,15 @@ export const useHashes = () => {
             if (!token) return;
             setLoading(true);
             const res = await deleteHash(token, id);
-            const data = await res.text();
+            const data = await res.json();
 
-            if (!res.ok) {
-                toast.error("Error deleting: " + data);
-                return false;
-            }
+            if (!res.ok) throw new Error(data.message);
 
             setHashes((prev) => prev.filter((r) => r.id !== id));
-            toast.success(data);
+            toast.success(data.message);
             return true;
         } catch (error) {
-            toast.error("Network error while deleting");
+            toast.error(error as string);
             console.error(error);
             return false;
         } finally {
