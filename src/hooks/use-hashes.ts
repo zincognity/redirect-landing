@@ -49,8 +49,9 @@ export const useHashes = () => {
             setHashes((prev) => [...prev, ...data.content]);
             setHasMore(data.length === PAGE_SIZE);
         } catch (error) {
-            toast.error(error as string);
-            console.error(error);
+            if (error instanceof Error) toast.error(error.message);
+            else toast.error("Unexpected error");
+
             setHasMore(false);
         } finally {
             setLoading(false);
@@ -84,8 +85,9 @@ export const useHashes = () => {
             toast.success(data.message);
             return true;
         } catch (error) {
-            toast.error(error as string);
-            console.error(error);
+            if (error instanceof Error) toast.error(error.message);
+            else toast.error("Unexpected error");
+
             return false;
         } finally {
             setLoading(false);
@@ -105,8 +107,9 @@ export const useHashes = () => {
             toast.success(data.message);
             return true;
         } catch (error) {
-            toast.error(error as string);
-            console.error(error);
+            if (error instanceof Error) toast.error(error.message);
+            else toast.error("Unexpected error");
+
             return false;
         } finally {
             setLoading(false);
