@@ -6,7 +6,8 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({ clientId }) => {
-    const redirectUri = "http://localhost:8080/api/v1/oauth/discord/callback";
+    const redirectUri =
+        "https://redirect-backend.incognity.link/api/v1/oauth/discord/callback";
     const scope = "identify";
     const discordLoginUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
         redirectUri
