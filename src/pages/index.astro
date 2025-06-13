@@ -1,4 +1,5 @@
 ---
+import ToastRedirect from "@/components/core/molecules/toast-redirect";
 import { Main } from "@/components/core/organisms/main";
 import SeoLayout from "@/core/layouts/SeoLayout.astro";
 import "@styles";
@@ -14,4 +15,5 @@ const description = "Manage and view your redirection rules";
     <p class="text-zinc-400 mb-10">{description}</p>
 
     <Main client:load />
+    <ToastRedirect client:load />
 </SeoLayout>
