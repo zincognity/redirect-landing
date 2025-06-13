@@ -9,14 +9,19 @@ export const RuleForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!token) return;
-        const form = new FormData(e.currentTarget);
+        const form = e.currentTarget;
+        const data = new FormData(form);
 
         const hash: Hash = {
-            hash: form.get("hash") as string,
-            redirectTo: form.get("url") as string,
+            hash: data.get("hash") as string,
+            redirectTo: data.get("url") as string,
         };
 
-        await saveHash(hash);
+        const wasSaved = await saveHash(hash);
+        if (wasSaved) {
+            form.reset();
+            verifyHash("");
+        }
     };
 
     const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
