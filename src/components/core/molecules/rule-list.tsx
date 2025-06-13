@@ -21,22 +21,24 @@ export const RuleList = () => {
                 hashes.map((hash) => <RuleItem key={hash.id} hash={hash} />)
             ) : token ? (
                 <p className="text-sm text-zinc-400 italic">
-                    No rules have been created yet.
+                    No hashes have been created yet.
                 </p>
             ) : (
                 <p className="text-sm text-zinc-400 italic">
-                    You're not logged in. Please sign in to view your rules.
+                    You're not logged in. Please sign in to view your hashes.
                 </p>
             )}
 
             {loading && (
-                <p className="text-sm text-zinc-400 italic">Loading rules...</p>
+                <p className="text-sm text-zinc-400 italic">
+                    Loading shashes...
+                </p>
             )}
 
             {hasMore && (
                 <button
                     onClick={loadMore}
-                    className="w-full text-sm text-blue-500 hover:underline mt-4"
+                    className="w-full text-sm text-zinc-300 hover:underline mt-4"
                 >
                     Load more
                 </button>
