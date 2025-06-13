@@ -1,7 +1,8 @@
 import { useHashesContext } from "@/contexts/hashes-context";
 import { pageUrl } from "@/core/config";
 import type { Hash } from "@/core/types";
-import { MdDelete } from "react-icons/md";
+import { MdContentCopy, MdDelete } from "react-icons/md";
+import { toast } from "sonner";
 
 interface Props {
     hash: Hash;
@@ -12,6 +13,17 @@ export const RuleItem = ({ hash }: Props) => {
 
     const handleDelete = async () => {
         await removeHash(hash.id!);
+    };
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(
+                `https://incognity.link/${hash.hash}`
+            );
+            toast.success("URL copied");
+        } catch (err) {
+            console.error("Error al copiar la URL:", err);
+        }
     };
 
     return (
@@ -36,10 +48,18 @@ export const RuleItem = ({ hash }: Props) => {
                         </li>
                     </ul>
                 </div>
-                <div className="w-full sm:w-auto justify-center items-center flex">
+                <div className="w-full sm:w-auto justify-center items-center flex gap-2">
+                    <button
+                        onClick={handleCopy}
+                        className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-md"
+                        title="Copy URL"
+                    >
+                        <MdContentCopy className="w-5 h-5" />
+                    </button>
                     <button
                         onClick={handleDelete}
                         className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white p-2 rounded-md"
+                        title="Eliminar"
                     >
                         <MdDelete className="w-5 h-5" />
                     </button>

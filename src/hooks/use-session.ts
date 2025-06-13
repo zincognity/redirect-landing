@@ -1,4 +1,3 @@
-import { useHashesContext } from "@/contexts/hashes-context";
 import { getDecodedToken } from "@/lib/jwt";
 import { useEffect, useState } from "react";
 
@@ -12,7 +11,6 @@ export type JwtPayload = {
 export const useSession = () => {
     const [token, setToken] = useState<string | null>(null);
     const [decoded, setDecoded] = useState<JwtPayload | null>(null);
-    const { cleanHashes } = useHashesContext();
 
     useEffect(() => {
         const storedToken = localStorage.getItem("jwt");
@@ -41,7 +39,6 @@ export const useSession = () => {
         localStorage.removeItem("jwt");
         setToken(null);
         setDecoded(null);
-        cleanHashes();
     };
 
     const isAuthenticated = Boolean(token);
