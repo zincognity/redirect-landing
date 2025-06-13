@@ -20,6 +20,10 @@ export const useHashes = () => {
 
     const { token } = useSession();
 
+    const cleanHashes = () => {
+        setHashes([]);
+    };
+
     const verifyHash = async (hash: string) => {
         try {
             if (!hash) return setIsUsed(null);
@@ -124,6 +128,7 @@ export const useHashes = () => {
         saveHash,
         removeHash,
         verifyHash,
+        cleanHashes,
         isUsed,
     };
 };
