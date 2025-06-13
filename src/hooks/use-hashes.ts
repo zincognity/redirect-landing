@@ -49,6 +49,7 @@ export const useHashes = () => {
         } catch (error) {
             toast.error("Error loading hashes");
             console.error(error);
+            setHasMore(false);
         } finally {
             setLoading(false);
         }
@@ -61,7 +62,7 @@ export const useHashes = () => {
     };
 
     useEffect(() => {
-        if (!token || !hasMore) return;
+        if (!token || !hasMore) return setHasMore(false);
         fetchHashes(page);
     }, [page]);
 

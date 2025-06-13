@@ -1,8 +1,10 @@
 import { useHashesContext } from "@/contexts/hashes-context";
+import { useSession } from "@/hooks/use-session";
 import { RuleItem } from "../atoms/rule-item";
 
 export const RuleList = () => {
     const { hashes, loadMore, hasMore, loading } = useHashesContext();
+    const { token } = useSession();
 
     return (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg p-6 space-y-4">
@@ -14,16 +16,29 @@ export const RuleList = () => {
                     Redirects to
                 </h2>
             </div>
-            {hashes.map((hash) => (
-                <RuleItem key={hash.id} hash={hash} />
-            ))}
-            {loading && <p className="text-sm text-zinc-400">Loading...</p>}
+
+            {hashes.length > 0 ? (
+                hashes.map((hash) => <RuleItem key={hash.id} hash={hash} />)
+            ) : token ? (
+                <p className="text-sm text-zinc-400 italic">
+                    No rules have been created yet.
+                </p>
+            ) : (
+                <p className="text-sm text-zinc-400 italic">
+                    You're not logged in. Please sign in to view your rules.
+                </p>
+            )}
+
+            {loading && (
+                <p className="text-sm text-zinc-400 italic">Loading rules...</p>
+            )}
+
             {hasMore && (
                 <button
                     onClick={loadMore}
                     className="w-full text-sm text-blue-500 hover:underline mt-4"
                 >
-                    Cargar más
+                    Load more
                 </button>
             )}
         </div>
